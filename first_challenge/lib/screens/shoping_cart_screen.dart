@@ -1,7 +1,7 @@
-import 'package:first_challenge/CustomCard/Presentation/card_item.dart';
 import 'package:first_challenge/bloc/shopping_cart_bloc.dart';
+import 'package:first_challenge/bloc/shopping_cart_sate.dart';
+import 'package:first_challenge/widget/shopping_cart/shoping_card_cart.dart';
 import 'package:flutter/material.dart';
-import 'package:first_challenge/CustomCard/domain/product.dart';
 
 class ShopingCartScreen extends StatefulWidget {
   const ShopingCartScreen({super.key, required this.bloc});
@@ -16,7 +16,7 @@ class _ShoppingCartState extends State<ShopingCartScreen> {
   @override
   void initState() {
     super.initState();
-    widget.bloc.getProducts();
+    widget.bloc.refreshStatus();
   }
 
   @override
@@ -26,16 +26,20 @@ class _ShoppingCartState extends State<ShopingCartScreen> {
         title: const Text('Shopping cart'),
       ),
       body: StreamBuilder(
-          initialData: widget.bloc.getProducts(),
+          initialData: widget.bloc.getState(),
           stream: widget.bloc.stream,
           builder: (context, snapshot) {
-            List<Product>? products = snapshot.data;
-
-            if (products != null && products.isNotEmpty) {
+            ShoppingCartState? state = snapshot.data;
+            if (state is EmptyCartState) {
+              return const Center(child: Text("Empty Cart"));
+            }
+            if (state is ProductCartState) {
               return GridView.builder(
-                itemCount: products.length,
-                itemBuilder: (context, index) => CardItem(
-                  product: products[index],
+                itemCount: state.products.length,
+                itemBuilder: (context, index) => ShopingCardItem(
+                  onDelete: () =>
+                      {widget.bloc.removeFromCart(state.products[index])},
+                  product: state.products[index],
                 ),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 1,
@@ -45,7 +49,7 @@ class _ShoppingCartState extends State<ShopingCartScreen> {
                 ),
               );
             } else {
-              return const Text("Empty Cart");
+              return const Center(child: Text("Empty Cart"));
             }
           }),
     );

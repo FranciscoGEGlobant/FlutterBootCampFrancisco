@@ -1,4 +1,4 @@
-import 'package:first_challenge/CustomCard/Domain/product.dart';
+import 'package:first_challenge/CustomCard/domain/product.dart';
 
 class ShoppingCartState {}
 

@@ -4,29 +4,32 @@ import 'package:first_challenge/CustomCard/domain/product.dart';
 import 'package:first_challenge/bloc/shopping_cart_sate.dart';
 
 class ShoppingCartBloc {
-  final _controller = StreamController<List<Product>>.broadcast();
-  Stream<List<Product>> get stream => _controller.stream;
-  final _products = <Product>[];
-
-  //final _stateController = StreamController<ShoppingCartState>();
-  //Stream<ShoppingCartState> get state => _stateController.stream;
+  final _controller = StreamController<ShoppingCartState>.broadcast();
+  Stream<ShoppingCartState> get stream => _controller.stream;
+  final _productsInCart = <Product>[];
+  ShoppingCartState _state = EmptyCartState();
 
   void addToCart(Product product) {
-    _products.add(product);
-    _controller.add(_products);
+    _productsInCart.add(product);
+    _state = ProductCartState(_productsInCart);
+    _controller.add(_state);
   }
 
   void removeFromCart(Product product) {
-    _products.remove(product);
-    _controller.add(_products);
+    _productsInCart.remove(product);
+    refreshStatus();
+    _controller.add(_state);
   }
 
-  void refreshProducts() {
-    _controller.add(_products);
+  void refreshStatus() {
+    _state = _productsInCart.isNotEmpty
+        ? ProductCartState(_productsInCart)
+        : EmptyCartState();
+    _controller.add(_state);
   }
 
-  List<Product> getProducts() {
-    return _products;
+  ShoppingCartState getState() {
+    return _state;
   }
 
   void dispose() {

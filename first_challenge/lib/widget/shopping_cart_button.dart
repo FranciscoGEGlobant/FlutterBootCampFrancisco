@@ -1,5 +1,6 @@
 import 'package:first_challenge/CustomCard/domain/product.dart';
 import 'package:first_challenge/bloc/shopping_cart_bloc.dart';
+import 'package:first_challenge/bloc/shopping_cart_sate.dart';
 import 'package:flutter/material.dart';
 
 import '../screens/shoping_cart_screen.dart';
@@ -14,7 +15,7 @@ class ShoppingCardButton extends StatelessWidget {
     return StreamBuilder(
         stream: bloc.stream,
         builder: (context, snapshot) {
-          List<Product>? products = snapshot.data;
+          ShoppingCartState? state = snapshot.data;
 
           return IconButton(
             onPressed: () {
@@ -33,14 +34,17 @@ class ShoppingCardButton extends StatelessWidget {
                   right: 0,
                   top: -2,
                   child: Visibility(
-                    visible: (products != null && products.isNotEmpty),
+                    visible: (state is ProductCartState &&
+                        state.products.isNotEmpty),
                     child: Container(
                       padding: const EdgeInsets.all(3),
                       alignment: Alignment.center,
                       decoration: const BoxDecoration(
                           color: Colors.redAccent, shape: BoxShape.circle),
                       child: Text(
-                        products?.length.toString() ?? "",
+                        state is ProductCartState
+                            ? state.products.length.toString()
+                            : "",
                         style: const TextStyle(
                           fontSize: 10,
                           color: Colors.white,
