@@ -10,10 +10,11 @@ class ImageCardItem extends StatelessWidget {
     return Stack(
       children: [
         Center(
-          child: Image.network(
-            urlImage,
-            width: 100,
-            height: 130,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Image.network(
+              urlImage,
+            ),
           ),
         ),
         Padding(
